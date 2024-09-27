@@ -5,7 +5,8 @@
   "description": "Sync Chrome bookmarks to Google Sheets with Gemini-generated descriptions",
   "permissions": [
     "bookmarks",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "https://generativelanguage.googleapis.com/"

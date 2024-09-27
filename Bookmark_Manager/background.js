@@ -37,23 +37,67 @@ chrome.bookmarks.onCreated.addListener(async (id, bookmark) => {
       getBookmarkPath(id),
       generateDescription(bookmark.title, bookmark.url)
     ]);
-
+    
+    console.log("Generating bookmark with ID:", id);
     const data = {
+      id: id.toString(),
       title: bookmark.title,
       url: bookmark.url,
       description: description,
       tags: path
     };
-
+    
+    console.log('Sending create request to Google Apps Script:', data);
+    
     // Send data to Google Apps Script
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxEgfgwOWny5n8MaJpcdB69Dsxp0Q2yG5MD_uRUSMGtIEtH3jpzMVhy6UlbLz1qY1Ei/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwpQlSVs2LoN2c3pTUI8g-5gILNUosyThmk8zq_goCN06Ld2JKS4cn6VUbvrT1-F2Y/exec', {
+      mode: "no-cors",
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
-    const result = await response.text();
-    console.log('Bookmark synced:', result);
+    if (!response.message == "Success") {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    else {
+      console.log('Bookmark synced:', response.message);
+    }
   } catch (error) {
     console.error('Error syncing bookmark:', error);
+  }
+});
+
+// Add this new event listener for bookmark deletion
+chrome.bookmarks.onRemoved.addListener(async (id, removeInfo) => {
+  console.log('Bookmark removal detected. ID:', id);
+  try {
+    const data = {
+      action: "delete",
+      id: id.toString() // Ensure id is a string
+    };
+
+    console.log('Sending delete request to Google Apps Script:', data);
+
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwpQlSVs2LoN2c3pTUI8g-5gILNUosyThmk8zq_goCN06Ld2JKS4cn6VUbvrT1-F2Y/exec', {
+      mode: "no-cors",
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.message == "Success") {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    else {
+      console.log('Bookmark deleted:', response.message);
+    }
+
+  } catch (error) {
+    console.error('Error deleting bookmark from sheet:', error);
   }
 });
