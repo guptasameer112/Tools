@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Bookmark to Google Sheets with Gemini",
+  "version": "1.0",
+  "description": "Sync Chrome bookmarks to Google Sheets with Gemini-generated descriptions",
+  "permissions": [
+    "bookmarks",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
