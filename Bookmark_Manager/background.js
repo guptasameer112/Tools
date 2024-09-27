@@ -1,28 +1,16 @@
-// Function to handle bookmark changes
-function handleBookmarkChange(id, info) {
-    if (info.url) {
-      chrome.storage.sync.get('bookmark', (data) => {
-        const bookmark = data.bookmark || {};
-        bookmark.url = info.url;
-        bookmark.title = info.title;
-  
-        // Save the updated bookmark data
-        chrome.storage.sync.set({ bookmark }, () => {
-          chrome.runtime.sendMessage({ action: 'updateBookmark' });
-        });
-      });
-    }
-  }
-  
-  // Function to handle incoming messages
-  function handleMessage(request, sender, sendResponse) {
-    if (request.action === 'updateBookmark') {
-      // Handle the updateBookmark action
-      console.log('Bookmark updated');
-    }
-    // Handle other actions if needed
-  }
-  
-  // Add listeners for bookmark changes and messages
-  chrome.bookmarks.onChanged.addListener(handleBookmarkChange);
-  chrome.runtime.onMessage.addListener(handleMessage);
+chrome.bookmarks.onCreated.addListener((id, bookmark) => {
+  const data = {
+    title: bookmark.title,
+    url: bookmark.url,
+    dateAdded: new Date(bookmark.dateAdded).toISOString()
+  };
+
+  // Send data to Google Apps Script
+  fetch('https://script.google.com/macros/s/AKfycbxEgfgwOWny5n8MaJpcdB69Dsxp0Q2yG5MD_uRUSMGtIEtH3jpzMVhy6UlbLz1qY1Ei/exec', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
+  .then(response => response.text())
+  .then(result => console.log('Bookmark synced:', result))
+  .catch(error => console.error('Error syncing bookmark:', error));
+});

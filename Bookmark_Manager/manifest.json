@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Bookmark Manager",
+  "name": "Bookmark to Google Sheets",
   "version": "1.0",
+  "description": "Sync Chrome bookmarks to Google Sheets",
   "permissions": [
     "bookmarks",
     "storage"
