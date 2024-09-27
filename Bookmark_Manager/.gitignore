@@ -1,0 +1,11 @@
+# Ignore secrets file
+secrets.js
+
+# Ignore node_modules if you're using npm
+node_modules/
+
+# Ignore any logs
+*.log
+
+# Ignore .DS_Store files on macOS
+.DS_Store
