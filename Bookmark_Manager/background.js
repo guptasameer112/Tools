@@ -19,24 +19,34 @@ async function generateDescription(title, url) {
 
 function getBookmarkPath(bookmarkId) {
   return new Promise((resolve) => {
-    chrome.bookmarks.get(bookmarkId, (bookmark) => {
-      if (bookmark[0].parentId) {
-        chrome.bookmarks.get(bookmark[0].parentId, (parent) => {
-          resolve(parent[0].title);
-        });
-      } else {
-        resolve("Root");
-      }
-    });
+    function getFullPath(id, path = []) {
+      chrome.bookmarks.get(id, (bookmark) => {
+        if (bookmark[0].parentId) {
+          path.unshift(bookmark[0].title);
+          getFullPath(bookmark[0].parentId, path);
+        } else {
+          resolve(path);
+        }
+      });
+    }
+    getFullPath(bookmarkId);
   });
+}
+
+function isInAllowedFolder(path) {
+  return path.includes('Tools') || path.includes('Learning');
 }
 
 chrome.bookmarks.onCreated.addListener(async (id, bookmark) => {
   try {
-    const [path, description] = await Promise.all([
-      getBookmarkPath(id),
-      generateDescription(bookmark.title, bookmark.url)
-    ]);
+    const path = await getBookmarkPath(id);
+    
+    if (!isInAllowedFolder(path)) {
+      console.log('Bookmark not in Tools or Learning folder. Skipping.');
+      return;
+    }
+
+    const description = await generateDescription(bookmark.title, bookmark.url);
     
     console.log("Generating bookmark with ID:", id);
     const data = {
@@ -44,7 +54,7 @@ chrome.bookmarks.onCreated.addListener(async (id, bookmark) => {
       title: bookmark.title,
       url: bookmark.url,
       description: description,
-      tags: path
+      tags: path.join('/')
     };
     
     console.log('Sending create request to Google Apps Script:', data);
