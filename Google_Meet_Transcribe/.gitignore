@@ -1,0 +1,14 @@
+# .gitignore
+
+# Credentials and tokens
+token.json
+Oauth_credentials.json
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Other common files to ignore
+*.log
+.DS_Store
