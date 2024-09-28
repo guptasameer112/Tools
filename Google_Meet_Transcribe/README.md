@@ -1,5 +1,9 @@
 # Meeting Summarizer
 
+## Prerequisites
+
+Before setting up the Meeting Summarizer, you need to obtain the text file of the meeting transcriptions. Use the Chrome extension "Transcriptonic" available at https://github.com/vivek-nexus/transcriptonic to generate these transcription files.
+
 ## Setup
 
 1. Clone the repository
